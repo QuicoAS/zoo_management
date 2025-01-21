@@ -58,4 +58,4 @@ class Species(models.Model):
     )
 
     # Relació amb els animals (1 espècie té molts animals)
-    animals_ids = fields.One2many('animal.management', 'species_id', string="Animals")
+    animal_ids = fields.One2many('animal.management', 'species_id', string="Animals")
