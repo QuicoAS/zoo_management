@@ -1,0 +1,11 @@
+<odoo>
+    <record id="group_zoo_manager" model="res.groups">
+        <field name="name">Zoo Manager</field>
+    </record>
+    <record id="group_animal_manager" model="res.groups">
+        <field name="name">Animal Manager</field>
+    </record>
+    <record id="group_species_manager" model="res.groups">
+        <field name="name">Species Manager</field>
+    </record>
+</odoo>
