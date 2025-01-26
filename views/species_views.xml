@@ -1,0 +1,52 @@
+<odoo>
+    <!-- Vista de llista -->
+    <record id="view_species_tree" model="ir.ui.view">
+        <field name="name">species.management.tree</field>
+        <field name="model">species.management</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="scientific_name"/>
+                <field name="common_name"/>
+                <field name="iucn_endangered_status"/>
+                <field name="avg_lifespan"/>
+                <field name="avg_weight"/>
+                <field name="diet_type"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Vista de formulari -->
+    <record id="view_species_form" model="ir.ui.view">
+        <field name="name">species.management.form</field>
+        <field name="model">species.management</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="scientific_name"/>
+                        <field name="common_name"/>
+                        <field name="iucn_endangered_status"/>
+                        <field name="avg_lifespan"/>
+                        <field name="avg_weight"/>
+                    </group>
+                    <group>
+                        <field name="notes"/>
+                        <field name="image" widget="image"/>
+                    </group>
+                    <notebook>
+                        <page string="Animals">
+                            <field name="animals_ids" widget="many2many_tags"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Acció per a Espècies -->
+    <record id="action_species" model="ir.actions.act_window">
+        <field name="name">Espècies</field>
+        <field name="res_model">species.management</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

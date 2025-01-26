@@ -1,0 +1,64 @@
+<odoo>
+    <!-- llista -->
+    <record id="view_animal_tree" model="ir.ui.view">
+        <field name="name">animal.management.tree</field>
+        <field name="model">animal.management</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="id_code"/>
+                <field name="species_id"/>
+                <field name="zoo_id"/>
+                <field name="gender"/>
+                <field name="weight"/>
+                <field name="height"/>
+                <field name="length"/>
+                <field name="behaviour"/>
+                <field name="origin_country"/>
+                <field name="origin_continent"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Formulari -->
+    <record id="view_animal_form" model="ir.ui.view">
+        <field name="name">animal.management.form</field>
+        <field name="model">animal.management</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="id_code"/>
+                        <field name="birth_date"/>
+                        <field name="gender"/>
+                        <field name="weight"/>
+                        <field name="height"/>
+                        <field name="length"/>
+                        <field name="behaviour"/>
+                        <field name="species_id"/>
+                        <field name="zoo_id"/>
+                    </group>
+                    <group>
+                        <field name="origin_country"/>
+                        <field name="origin_continent"/>
+                    </group>
+                    <group>
+                        <field name="notes"/>
+                        <field name="image" widget="image"/>
+                    </group>
+                    <notebook>
+                        <page string="Tags">
+                            <field name="tags_ids" widget="many2many_tags"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Acció -->
+    <record id="action_animal" model="ir.actions.act_window">
+        <field name="name">Animals</field>
+        <field name="res_model">animal.management</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

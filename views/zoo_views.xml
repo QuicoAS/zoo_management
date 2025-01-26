@@ -1,5 +1,5 @@
 <odoo>
-    <!-- Vista de llista -->
+    <!-- Vista de llista per a Zoològics -->
     <record id="view_zoo_tree" model="ir.ui.view">
         <field name="name">zoo.management.tree</field>
         <field name="model">zoo.management</field>
@@ -7,13 +7,16 @@
             <tree>
                 <field name="name"/>
                 <field name="city"/>
-                <field name="country"/>
+                <field name="country_id"/>
+                <field name="state_id"/>
                 <field name="size"/>
+                <field name="animal_count"/>
+                <field name="species_count"/>
             </tree>
         </field>
     </record>
 
-    <!-- Vista de formulari -->
+    <!-- Vista de formulari per a Zoològics -->
     <record id="view_zoo_form" model="ir.ui.view">
         <field name="name">zoo.management.form</field>
         <field name="model">zoo.management</field>
@@ -23,22 +26,39 @@
                     <group>
                         <field name="name"/>
                         <field name="city"/>
-                        <field name="country"/>
+                        <field name="country_id"/>
+                        <field name="state_id"/>
                         <field name="size"/>
                     </group>
+                    <group>
+                        <field name="animal_count"/>
+                        <field name="species_count"/>
+                        <field name="notes"/>
+                        <field name="image" widget="image"/>
+                    </group>
+                    <notebook>
+                        <page string="Infraestructura">
+                            <group>
+                                <field name="restaurant"/>
+                                <field name="parking_capacity"/>
+                                <field name="shop"/>
+                                <field name="cafeteria"/>
+                                <field name="ticket_price"/>
+                            </group>
+                        </page>
+                        <page string="Tags">
+                            <field name="tags_ids" widget="many2many_tags"/>
+                        </page>
+                    </notebook>
                 </sheet>
             </form>
         </field>
     </record>
 
-    <!-- Acció per mostrar les vistes -->
-    <record id="action_zoo_management" model="ir.actions.act_window">
+    <!-- Acció per mostrar el zoològic -->
+    <record id="action_zoo" model="ir.actions.act_window">
         <field name="name">Zoològics</field>
         <field name="res_model">zoo.management</field>
         <field name="view_mode">tree,form</field>
     </record>
-
-    <!-- Menú -->
-    <menuitem id="menu_zoo_management_root" name="Zoo Management" sequence="1"/>
-    <menuitem id="menu_zoo_management" name="Zoològics" parent="menu_zoo_management_root" action="action_zoo_management" sequence="10"/>
 </odoo>

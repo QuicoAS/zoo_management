@@ -1,0 +1,56 @@
+<odoo>
+    <!-- Vista de llista -->
+    <record id="view_tags_tree" model="ir.ui.view">
+        <field name="name">tags.management.tree</field>
+        <field name="model">tags.management</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="tag_type"/>
+                <field name="active"/>
+                <field name="end_date"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Vista de formulari -->
+    <record id="view_tags_form" model="ir.ui.view">
+        <field name="name">tags.management.form</field>
+        <field name="model">tags.management</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="tag_type"/>
+                        <field name="color"/>
+                        <field name="active"/>
+                        <field name="end_date"/>
+                    </group>
+                    <group>
+                        <field name="description"/>
+                        <field name="icon" widget="image"/>
+                    </group>
+                    <notebook>
+                        <page string="Animals">
+                            <field name="animal_ids" widget="many2many_tags"/>
+                        </page>
+                        <page string="Zoos">
+                            <field name="zoo_ids" widget="many2many_tags"/>
+                        </page>
+                        <page string="Espècies">
+                            <field name="species_ids" widget="many2many_tags"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Acció -->
+    <record id="action_tags" model="ir.actions.act_window">
+        <field name="name">Tags</field>
+        <field name="res_model">tags.management</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

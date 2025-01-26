@@ -24,11 +24,15 @@ Permet als usuaris gestionar:
 
     # Fitxers carregats sempre
     'data': [
-        'security/ir.model.access.csv',  # Permisos d'accés
-        'data/groups.xml', # Grups d'usuaris
-        'views/zoo_views.xml', # Vistes de zoològics
-        ],
-
+        'security/ir.model.access.csv',      # Accessos a models
+        'views/zoo_views.xml',               # Vistes dels zoològics
+        'views/animal_views.xml',            # Vistes dels animals
+        'views/species_views.xml',           # Vistes de les espècies
+        'views/tags_views.xml',              # Vistes dels tags
+        'views/shop_views.xml',              # Vistes de les botigues
+        'views/restaurants_views.xml',       # Vistes dels restaurants
+        'views/menu_views.xml',              # Menú principal (s'ha de carregar després)
+    ],
 
     'installable': True,
     'application': True,
