@@ -1,53 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Vista de llista -->
+    <!-- Vista de Llista (Tree) -->
     <record id="view_restaurant_tree" model="ir.ui.view">
         <field name="name">zoo.restaurant.tree</field>
         <field name="model">zoo.restaurant</field>
         <field name="arch" type="xml">
-            <tree>
-                <field name="name"/>
-                <field name="zoo_id"/>
-                <field name="capacity"/>
-                <field name="restaurant_type"/>
+            <tree string="Llista de Restaurants">
+                <field name="name" string="Nom"/>
+                <field name="zoo_id" string="Zoològic"/>
+                <field name="capacity" string="Capacitat"/>
+                <field name="restaurant_type" string="Tipus"/>
             </tree>
         </field>
     </record>
 
-    <!-- Vista de formulari -->
     <record id="view_restaurant_form" model="ir.ui.view">
         <field name="name">zoo.restaurant.form</field>
         <field name="model">zoo.restaurant</field>
         <field name="arch" type="xml">
-            <form>
+            <form string="Gestió de Restaurants">
                 <sheet>
-                    <group>
-                        <field name="name"/>
-                        <field name="zoo_id"/>
-                        <field name="capacity"/>
-                        <field name="restaurant_type"/>
+                    <!-- Disposició en dues columnes -->
+                    <group col="2">
+                        <!-- Columna esquerra: Camps i notebook -->
+                        <group>
+                            <!-- Informació bàsica -->
+                            <group>
+                                <field name="name" string="Nom" readonly="1"/>
+                                <field name="zoo_id" string="Zoològic"/>
+                            </group>
+                            <group>
+                                <field name="capacity" string="Capacitat Màxima"/>
+                                <field name="restaurant_type" string="Tipus de Restaurant"/>
+                            </group>
+                            <group>
+                                <field name="services" string="Serveis"/>
+                                <field name="address" string="Adreça"/>
+                            </group>
+                            <!-- Notebook ampliat -->
+                            <notebook>
+                                <page string="Notes">
+                                    <field name="notes" colspan="4" placeholder="Afegir notes sobre el restaurant..."/>
+                                </page>
+                                <page string="Etiquetes">
+                                    <field name="tags_ids" widget="many2many_tags"/>
+                                </page>
+                                <!-- Pots afegir més pestanyes segons necessitis, per exemple: -->
+                                <page string="Històric">
+                                    <!-- Camp per a històric, documents, etc. -->
+                                    <div style="text-align: center; font-style: italic; color: #888;">
+                                    Aquí pots afegir informació addicional o documents.
+                                    </div>
+                                </page>
+                            </notebook>
+                        </group>
+
+                        <!-- Columna dreta: Imatge gran -->
+                        <div style="padding: 10px; text-align: center;">
+                            <field name="image" widget="image" options="{'preview_image': 'image'}" style="width: 400px; height: auto; object-fit: cover; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);" />
+                        </div>
+
                     </group>
-                    <group>
-                        <field name="services"/>
-                        <field name="address"/>
-                    </group>
-                    <group>
-                        <field name="notes"/>
-                        <field name="image" widget="image"/>
-                    </group>
-                    <notebook>
-                        <page string="Tags">
-                            <field name="tags_ids" widget="many2many_tags"/>
-                        </page>
-                    </notebook>
                 </sheet>
             </form>
         </field>
     </record>
 
+
+    <!-- Vista Kanban -->
+    <record id="view_restaurant_kanban" model="ir.ui.view">
+        <field name="name">zoo.restaurant.kanban</field>
+        <field name="model">zoo.restaurant</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_small_column">
+                <!-- Incloem el camp d'imatge perquè estigui disponible -->
+                <field name="image"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div t-attf-class="o_kanban_record oe_kanban_global_click" style="cursor: pointer; display: flex; flex-direction: column; background: #fff;
+                                    border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.15); overflow: hidden;
+                                    transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                            <!-- Secció d'Imatge -->
+                            <div class="o_kanban_image" style="width: 100%; height: 250px; overflow: hidden;">
+                                <t t-if="record.image.raw_value">
+                                    <img t-att-src="'/web/image/zoo.restaurant/' + record.id.raw_value + '/image'" alt="Imatge del Restaurant" style="width: 100%; height: 100%; object-fit: cover;" loading="lazy"/>
+                                </t>
+                                <t t-else="">
+                                    <img t-att-src="'/zoo_management/static/src/img/placeholder.png'" alt="Imatge per defecte" style="width: 100%; height: 100%; object-fit: cover;" loading="lazy"/>
+                                </t>
+                            </div>
+                            <!-- Secció de Dades -->
+                            <div class="oe_kanban_details" style="padding: 10px; text-align: center;">
+                                <!-- Nom del Restaurant -->
+                                <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+                                            font-size: 18px; font-weight: bold; color: #2C3E50;">
+                                    <field name="name"/>
+                                </div>
+                                <!-- Zoològic -->
+                                <div style="margin-top: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+                                            font-size: 14px; color: #7F8C8D;">
+                                    <field name="zoo_id"/>
+                                </div>
+                                <!-- Capacitat -->
+                                <div style="margin-top: 5px;">
+                                    <span style="font-size: 14px; color: #34495E;">Capacitat:</span>
+                                    <span style="font-size: 16px; color: #E74C3C; margin-left: 5px;">
+                                        <field name="capacity"/>
+                                    </span>
+                                </div>
+                                <!-- Tipus de Restaurant -->
+                                <div style="margin-top: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+                                            font-size: 14px; color: #7F8C8D;">
+                                    <field name="restaurant_type"/>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Vista Graph -->
+    <record id="view_restaurant_graph" model="ir.ui.view">
+        <field name="name">zoo.restaurant.graph</field>
+        <field name="model">zoo.restaurant</field>
+        <field name="arch" type="xml">
+            <graph type="bar" string="Gràfic de Restaurants">
+                <field name="capacity" type="measure"/>
+                <field name="restaurant_type" type="row"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Vista Pivot -->
+    <record id="view_restaurant_pivot" model="ir.ui.view">
+        <field name="name">zoo.restaurant.pivot</field>
+        <field name="model">zoo.restaurant</field>
+        <field name="arch" type="xml">
+            <pivot string="Pivot de Restaurants">
+                <field name="capacity" type="measure"/>
+                <field name="restaurant_type" type="row"/>
+            </pivot>
+        </field>
+    </record>
+    <!-- Vista de Cerca (Search) per a Restaurants -->
+    <record id="view_restaurant_search" model="ir.ui.view">
+        <field name="name">zoo.restaurant.search</field>
+        <field name="model">zoo.restaurant</field>
+        <field name="arch" type="xml">
+            <search string="Cerca Restaurants">
+                <!-- Filtre per Capacitat -->
+                <filter name="capacity_over_100" string="Més de 100 Places" domain="[('capacity', '&gt;', 100)]"/>
+                <filter name="small_capacity" string="Menys de 50 Places" domain="[('capacity', '&lt;', 50)]"/>
+
+                <!-- Filtre per Tipus de Restaurant -->
+                <group string="Filtrar per Tipus de Restaurant">
+                    <filter name="cafeteria" string="Cafeteria Ràpida" domain="[('restaurant_type', '=', 'cafeteria')]"/>
+                    <filter name="buffet" string="Buffet Autoservei" domain="[('restaurant_type', '=', 'buffet')]"/>
+                    <filter name="thematic" string="Restaurant Temàtic" domain="[('restaurant_type', '=', 'thematic')]"/>
+                    <filter name="vip" string="Àrea VIP" domain="[('restaurant_type', '=', 'vip')]"/>
+                    <filter name="foodtruck" string="Food Truck" domain="[('restaurant_type', '=', 'foodtruck')]"/>
+                    <filter name="healthy" string="Zona Saludable" domain="[('restaurant_type', '=', 'healthy')]"/>
+                </group>
+
+                <!-- Camps de cerca directa -->
+                <field name="name" string="Nom del Restaurant"/>
+                <field name="zoo_id" string="Zoològic"/>
+                <field name="address" string="Adreça"/>
+            </search>
+        </field>
+    </record>
     <!-- Acció -->
     <record id="action_restaurant" model="ir.actions.act_window">
         <field name="name">Restaurants</field>
         <field name="res_model">zoo.restaurant</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">tree,kanban,form,graph,pivot</field>
     </record>
 </odoo>

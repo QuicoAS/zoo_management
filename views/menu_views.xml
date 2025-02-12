@@ -2,11 +2,16 @@
     <!-- Menú principal -->
     <menuitem id="menu_zoo_management" name="Gestió de Zoològics" sequence="10" />
 
-    <!-- Submenús -->
+    <!-- Submenú Zoològics amb Animals i Espècies -->
     <menuitem id="menu_zoo_management_zoologics" name="Zoològics" parent="menu_zoo_management" action="action_zoo" sequence="1" />
-    <menuitem id="menu_zoo_management_animals" name="Animals" parent="menu_zoo_management" action="action_animal" sequence="2" />
-    <menuitem id="menu_zoo_management_species" name="Espècies" parent="menu_zoo_management" action="action_species" sequence="3" />
-    <menuitem id="menu_zoo_management_restaurants" name="Restaurants" parent="menu_zoo_management" action="action_restaurant" sequence="4"/>
-    <menuitem id="menu_zoo_management_shops" name="Botigues" parent="menu_zoo_management" action="action_shop" sequence="5"/>
-    <menuitem id="menu_zoo_management_tags" name="Tags" parent="menu_zoo_management" action="action_tags" sequence="6"/>
+    <menuitem id="menu_zoo_management_animals" name="Animals" parent="menu_zoo_management_zoologics" action="action_animal" sequence="1"/>
+    <menuitem id="menu_zoo_management_species" name="Espècies" parent="menu_zoo_management_zoologics" action="action_species" sequence="2"/>
+
+    <!-- Hostaleria amb Restaurants i Botigues -->
+    <menuitem id="menu_zoo_management_hospitality" name="Hostaleria" parent="menu_zoo_management" sequence="2" />
+    <menuitem id="menu_zoo_management_restaurants" name="Restaurants" parent="menu_zoo_management_hospitality" action="action_restaurant" sequence="1"/>
+    <menuitem id="menu_zoo_management_shops" name="Botigues" parent="menu_zoo_management_hospitality" action="action_shop" sequence="2"/>
+
+    <!-- Altres -->
+    <menuitem id="menu_zoo_management_tags" name="Tags" parent="menu_zoo_management" action="action_tags" sequence="3"/>
 </odoo>

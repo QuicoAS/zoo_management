@@ -1,5 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Vista de llista per a Zoològics -->
+    <!-- Acción antes de la vista formulario -->
+    <record id="action_zoo" model="ir.actions.act_window">
+        <field name="name">Zoològics</field>
+        <field name="res_model">zoo.management</field>
+        <field name="view_mode">kanban,tree,form,graph,pivot</field>
+        <field name="search_view_id" ref="view_zoo_search"/>
+    </record>
+
+    <!-- Vista de árbol -->
     <record id="view_zoo_tree" model="ir.ui.view">
         <field name="name">zoo.management.tree</field>
         <field name="model">zoo.management</field>
@@ -8,7 +17,7 @@
                 <field name="name"/>
                 <field name="city"/>
                 <field name="country_id"/>
-                <field name="state_id"/>
+                <field name="state_id" domain="[('country_id', '=', country_id)]"/>
                 <field name="size"/>
                 <field name="animal_count"/>
                 <field name="species_count"/>
@@ -16,38 +25,65 @@
         </field>
     </record>
 
-    <!-- Vista de formulari per a Zoològics -->
+    <!-- Vista de formulario -->
     <record id="view_zoo_form" model="ir.ui.view">
         <field name="name">zoo.management.form</field>
         <field name="model">zoo.management</field>
         <field name="arch" type="xml">
-            <form>
+            <form string="Zoològic">
                 <sheet>
+                    <div class="oe_title">
+                        <div style="display: flex; align-items: center; flex-wrap: wrap; margin-bottom: 20px;">
+                            <div style="flex: 0 0 auto; margin-right: 10px;">
+                                <field name="image" widget="image" class="oe_avatar" options="{'preview_image': 'image'}" style="max-width: 150px; width: 100%; height: auto; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);" />
+                            </div>
+                            <div style="flex: 1;">
+                                <h1 style="margin: 0; font-size: 28px; font-weight: bold; color: #4CAF50;">
+                                    <field name="name" placeholder="Nom del zoològic"/>
+                                </h1>
+                            </div>
+                        </div>
+                    </div>
                     <group>
-                        <field name="name"/>
-                        <field name="city"/>
-                        <field name="country_id"/>
-                        <field name="state_id"/>
-                        <field name="size"/>
-                    </group>
-                    <group>
-                        <field name="animal_count"/>
-                        <field name="species_count"/>
-                        <field name="notes"/>
-                        <field name="image" widget="image"/>
+                        <group>
+                            <field name="city"/>
+                            <field name="country_id"/>
+                            <field name="state_id" domain="[('country_id', '=', country_id)]"/>
+                            <field name="size"/>
+                            <field name="ticket_price" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                        </group>
                     </group>
                     <notebook>
-                        <page string="Infraestructura">
-                            <group>
-                                <field name="restaurant"/>
-                                <field name="parking_capacity"/>
-                                <field name="shop"/>
-                                <field name="cafeteria"/>
-                                <field name="ticket_price"/>
+                        <page string="Estadístiques">
+                            <group col="2">
+                                <field name="animal_count" readonly="1"/>
+                                <field name="species_count" readonly="1"/>
                             </group>
                         </page>
-                        <page string="Tags">
+                        <page string="Infraestructura">
+                            <group col="4">
+                                <field name="restaurant"/>
+                                <field name="shop"/>
+                                <field name="cafeteria"/>
+                                <field name="parking_capacity"/>
+                            </group>
+                        </page>
+                        <page string="Animals i Espècies">
+                            <field name="animals_ids">
+                                <tree editable="bottom">
+                                    <field name="name" readonly="1"/>
+                                    <field name="species_id"/>
+                                    <field name="birth_date"/>
+                                    <field name="age" readonly="1"/>
+                                </tree>
+                            </field>
+
+                        </page>
+                        <page string="Etiquetes">
                             <field name="tags_ids" widget="many2many_tags"/>
+                        </page>
+                        <page string="Notes Internes">
+                            <field name="notes" placeholder="Afegir notes internes..."/>
                         </page>
                     </notebook>
                 </sheet>
@@ -55,10 +91,95 @@
         </field>
     </record>
 
-    <!-- Acció per mostrar el zoològic -->
-    <record id="action_zoo" model="ir.actions.act_window">
-        <field name="name">Zoològics</field>
-        <field name="res_model">zoo.management</field>
-        <field name="view_mode">tree,form</field>
+    <record id="view_zoo_kanban" model="ir.ui.view">
+        <field name="name">zoo.management.kanban</field>
+        <field name="model">zoo.management</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_small_column">
+                <!-- Se incluye el campo para que esté disponible -->
+                <field name="image"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div t-attf-class="o_kanban_record oe_kanban_global_click" style="cursor: pointer; display: flex; flex-direction: row; align-items: center; background: #fff; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.15); transition: transform 0.2s; overflow: hidden;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+
+                            <!-- Sección de Imagen -->
+                            <div class="o_kanban_image" style="width: 150px; height: 150px; flex-shrink: 0; overflow: hidden;">
+                                <t t-if="record.image.raw_value">
+                                    <img t-att-src="'/web/image/zoo.management/' + record.id.raw_value + '/image'" alt="Imatge del zoològic" style="width: 100%; height: 100%; object-fit: cover;" loading="lazy"/>
+                                </t>
+                                <t t-else="">
+                                    <img t-att-src="'/zoo_management/static/src/img/placeholder.png'" alt="Imatge per defecte" style="width: 100%; height: 100%; object-fit: cover;" loading="lazy"/>
+                                </t>
+                            </div>
+
+                            <!-- Sección de Datos -->
+                            <div class="oe_kanban_details" style="flex-grow: 1; display: flex; flex-direction: column; justify-content: center; padding: 0 5px; overflow: hidden;">
+
+                                <!-- Nombre -->
+                                <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                    <span style="font-size: 18px; font-weight: bold; color: #2C3E50;">
+                                        <field name="name"/>
+                                    </span>
+                                </div>
+
+                                <!-- Ciudad y país -->
+                                <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px;">
+                                    <span style="font-size: 14px; color: #7F8C8D;">
+                                        <field name="city"/>
+                                    </span>
+                                    <span style="font-size: 14px; color: #7F8C8D;"> - </span>
+                                    <span style="font-size: 14px; color: #7F8C8D;">
+                                        <field name="country_id"/>
+                                    </span>
+                                </div>
+
+                                <!-- Precio -->
+                                <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px;">
+                                    <span style="font-size: 14px; color: #34495E;">Preu:</span>
+                                    <span style="font-size: 16px; color: #E74C3C; margin-left: 5px;">
+                                        <field name="ticket_price"/>
+                                    </span>
+                                    <span style="font-size: 14px; color: #34495E;"> €</span>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+
+
+    <!-- Vista de búsqueda -->
+    <record id="view_zoo_search" model="ir.ui.view">
+        <field name="name">zoo.management.search</field>
+        <field name="model">zoo.management</field>
+        <field name="arch" type="xml">
+            <search string="Cerca Zoològics">
+                <filter name="animals_gt_50" string="Més de 50 Animals" domain="[('animal_count', '&gt;', 50)]"/>
+                <filter name="has_cafeteria" string="Amb Cafeteria" domain="[('cafeteria', '=', True)]"/>
+                <filter name="large_size" string="Gran (>10,000 m²)" domain="[('size', '&gt;', 5000)]"/>
+                <group string="Filtrar per País">
+                    <filter name="country_spain" string="España" domain="[('country_id.name', '=', 'Espanya')]"/>
+                    <filter name="country_france" string="Francia" domain="[('country_id.name', '=', 'Francia')]"/>
+                </group>
+                <field name="name" string="Nom del Zoològic"/>
+                <field name="city" string="Ciutat"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Vista de gráfico -->
+    <record id="view_zoo_graph" model="ir.ui.view">
+        <field name="name">zoo.management.graph</field>
+        <field name="model">zoo.management</field>
+        <field name="arch" type="xml">
+            <graph type="bar" string="Zoològics Graph">
+                <field name="animal_count" type="measure"/>
+                <field name="species_count" type="measure"/>
+                <field name="city" type="row"/>
+            </graph>
+        </field>
     </record>
 </odoo>

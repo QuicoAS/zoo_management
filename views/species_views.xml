@@ -1,41 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Vista de llista -->
+    <!-- Vista de Llista (Tree) -->
     <record id="view_species_tree" model="ir.ui.view">
         <field name="name">species.management.tree</field>
         <field name="model">species.management</field>
         <field name="arch" type="xml">
-            <tree>
-                <field name="scientific_name"/>
-                <field name="common_name"/>
-                <field name="iucn_endangered_status"/>
-                <field name="avg_lifespan"/>
-                <field name="avg_weight"/>
-                <field name="diet_type"/>
+            <tree string="Llista d'Espècies">
+                <field name="name" string="Nom Complet"/>
+                <field name="iucn_endangered_status" string="Estat IUCN"/>
+                <field name="avg_lifespan" string="Vida Promig (anys)"/>
+                <field name="avg_weight" string="Pes Promig (kg)"/>
+                <field name="diet_type" string="Tipus de Dieta"/>
             </tree>
         </field>
     </record>
 
-    <!-- Vista de formulari -->
+    <!-- Vista de Formulari (Form) -->
+    <!-- Vista de Formulari (Form) per a la gestió d'Espècies amb Notebook -->
     <record id="view_species_form" model="ir.ui.view">
         <field name="name">species.management.form</field>
         <field name="model">species.management</field>
         <field name="arch" type="xml">
-            <form>
+            <form string="Gestió d'Espècies">
                 <sheet>
-                    <group>
-                        <field name="scientific_name"/>
-                        <field name="common_name"/>
-                        <field name="iucn_endangered_status"/>
-                        <field name="avg_lifespan"/>
-                        <field name="avg_weight"/>
-                    </group>
-                    <group>
-                        <field name="notes"/>
-                        <field name="image" widget="image"/>
-                    </group>
+                    <!-- Capçalera amb imatge i Nom Complet -->
+                    <div class="oe_title" style="display: flex; align-items: center; flex-wrap: wrap; margin-bottom: 20px;">
+                        <div style="flex: 0 0 auto; margin-right: 10px;">
+                            <field name="image" widget="image" class="oe_avatar" options="{'preview_image': 'image'}" style="max-width: 150px; width: 100%; height: auto; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);" />
+                        </div>
+                        <div style="flex: 1;">
+                            <h1 style="margin: 0; font-size: 28px; font-weight: bold; color: #4CAF50;">
+                                <field name="name" placeholder="Nom complet de l'espècie"/>
+                            </h1>
+                        </div>
+                    </div>
+
+                    <!-- Notebook amb diverses pestanyes -->
                     <notebook>
-                        <page string="Animals">
-                            <field name="animals_ids" widget="many2many_tags"/>
+                        <!-- Pestanya d'Informació Bàsica -->
+                        <page string="Informació Bàsica">
+                            <group>
+                                <group>
+                                    <field name="scientific_name" string="Nom Científic"/>
+                                    <field name="common_name" string="Nom Vulgar"/>
+                                    <field name="iucn_endangered_status" string="Estat IUCN"/>
+                                </group>
+                                <group>
+                                    <field name="avg_lifespan" string="Vida Promig (anys)"/>
+                                    <field name="avg_weight" string="Pes Promig (kg)"/>
+                                    <field name="diet_type" string="Tipus de Dieta"/>
+                                </group>
+                            </group>
+                        </page>
+
+                        <!-- Pestanya per als Animals relacionats -->
+                        <page string="Relació amb Animals">
+                            <group>
+                                <field name="animals_ids" widget="many2many_tags" string="Animals"/>
+                            </group>
+                        </page>
+
+                        <!-- Pestanya de Notes -->
+                        <page string="Notes">
+                            <group>
+                                <field name="notes" placeholder="Afegir notes sobre l'espècie..."/>
+                            </group>
                         </page>
                     </notebook>
                 </sheet>
@@ -43,10 +72,139 @@
         </field>
     </record>
 
+    <!-- Vista Kanban -->
+    <record id="view_species_kanban" model="ir.ui.view">
+        <field name="name">species.management.kanban</field>
+        <field name="model">species.management</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_small_column">
+                <!-- Incloem el camp d'imatge perquè estigui disponible -->
+                <field name="image"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div t-attf-class="o_kanban_record oe_kanban_global_click" style="cursor: pointer; display: flex; flex-direction: column; background: #fff; 
+                                    border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.15); 
+                                    overflow: hidden; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+
+                            <!-- Secció d'Imatge -->
+                            <div class="o_kanban_image" style="width: 100%; height: 300px; overflow: hidden;">
+                                <t t-if="record.image.raw_value">
+                                    <img t-att-src="'/web/image/species.management/' + record.id.raw_value + '/image'" alt="Imatge de l'espècie" style="width: 100%; height: 100%; object-fit: cover;" loading="lazy"/>
+                                </t>
+                                <t t-else="">
+                                    <img t-att-src="'/zoo_management/static/src/img/placeholder.png'" alt="Imatge per defecte" style="width: 100%; height: 100%; object-fit: cover;" loading="lazy"/>
+                                </t>
+                            </div>
+
+                            <!-- Secció de Dades -->
+                            <div class="oe_kanban_details" style="padding: 10px 10px 0 10px; margin-bottom: 0; text-align: center;">
+                                <!-- Nom Complet -->
+                                <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+                                            font-size: 18px; font-weight: bold; color: #2C3E50;">
+                                    <field name="name"/>
+                                </div>
+                                <!-- Estat IUCN -->
+                                <div style="margin-top: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+                                            font-size: 14px; color: #7F8C8D;">
+                                    <field name="iucn_endangered_status"/>
+                                </div>
+                                <!-- Vida Promig i Pes Mitjà -->
+                                <div style="margin-top: 5px; font-size: 14px; color: #34495E;">
+                                    <span>Vida Promig: </span>
+                                    <span style="font-size: 16px; color: #E74C3C; margin-left: 5px;">
+                                        <field name="avg_lifespan"/>
+                                    </span>
+                                    <span> anys</span>
+                                </div>
+                                <div style="margin-top: 5px; font-size: 14px; color: #34495E;">
+                                    <span>Pes Promig: </span>
+                                    <span style="font-size: 16px; color: #E74C3C; margin-left: 5px;">
+                                        <field name="avg_weight"/>
+                                    </span>
+                                    <span> kg</span>
+                                </div>
+                                <div style="margin-top: 5px; font-size: 14px; color: #34495E;">
+                                    <span>Tipus de Dieta: </span>
+                                    <span style="font-size: 16px; color: #E74C3C; margin-left: 5px;">
+                                        <field name="diet_type"/>
+                                    </span>
+                                </div>
+                                <div style="margin-top: 5px; font-size: 14px; color: #34495E;">
+                                    <span>Activitat: </span>
+                                    <span style="font-size: 16px; color: #E74C3C; margin-left: 5px;">
+                                        <field name="activity"/>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Vista Graph -->
+    <record id="view_species_graph" model="ir.ui.view">
+        <field name="name">species.management.graph</field>
+        <field name="model">species.management</field>
+        <field name="arch" type="xml">
+            <graph type="bar" string="Gràfic d'Espècies">
+                <!-- Es comparen la vida i el pes per tipus de dieta -->
+                <field name="avg_lifespan" type="measure"/>
+                <field name="avg_weight" type="measure"/>
+                <field name="diet_type" type="row"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Vista Pivot -->
+    <record id="view_species_pivot" model="ir.ui.view">
+        <field name="name">species.management.pivot</field>
+        <field name="model">species.management</field>
+        <field name="arch" type="xml">
+            <pivot string="Pivot d'Espècies">
+                <field name="avg_lifespan" type="measure"/>
+                <field name="avg_weight" type="measure"/>
+                <field name="diet_type" type="row"/>
+            </pivot>
+        </field>
+    </record>
+    <!-- Vista de Cerca (Search) per a Espècies -->
+    <record id="view_species_search" model="ir.ui.view">
+        <field name="name">species.management.search</field>
+        <field name="model">species.management</field>
+        <field name="arch" type="xml">
+            <search string="Cerca Espècies">
+                <!-- Filtre per Estat de Conservació -->
+                <filter name="endangered_species" string="En Perill" domain="[('iucn_endangered_status', 'in', ['en', 'cr', 'ew', 'ex'])]"/>
+                <filter name="vulnerable_species" string="Vulnerables" domain="[('iucn_endangered_status', '=', 'vu')]"/>
+
+                <!-- Filtre per Tipus de Dieta -->
+                <group string="Filtrar per Dieta">
+                    <filter name="carnivore" string="Carnívors" domain="[('diet_type', '=', 'carnivore')]"/>
+                    <filter name="herbivore" string="Herbívors" domain="[('diet_type', '=', 'herbivore')]"/>
+                    <filter name="omnivore" string="Omnívors" domain="[('diet_type', '=', 'omnivore')]"/>
+                    <filter name="insectivore" string="Insectívors" domain="[('diet_type', '=', 'insectivore')]"/>
+                </group>
+
+                <!-- Filtre per Tipus d'Activitat -->
+                <group string="Filtrar per Activitat">
+                    <filter name="diurnal" string="Diürns" domain="[('activity', '=', 'diurnal')]"/>
+                    <filter name="nocturnal" string="Nocturns" domain="[('activity', '=', 'nocturnal')]"/>
+                    <filter name="crepuscular" string="Crepusculars" domain="[('activity', '=', 'crepuscular')]"/>
+                </group>
+
+                <!-- Camps de cerca directa -->
+                <field name="name" string="Nom Complet"/>
+                <field name="scientific_name" string="Nom Científic"/>
+                <field name="common_name" string="Nom Vulgar"/>
+            </search>
+        </field>
+    </record>
     <!-- Acció per a Espècies -->
     <record id="action_species" model="ir.actions.act_window">
         <field name="name">Espècies</field>
         <field name="res_model">species.management</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">tree,kanban,form,graph,pivot</field>
     </record>
 </odoo>

@@ -1,56 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Vista de llista -->
+    <!-- Vista de Llista (Tree) -->
     <record id="view_tags_tree" model="ir.ui.view">
         <field name="name">tags.management.tree</field>
         <field name="model">tags.management</field>
         <field name="arch" type="xml">
-            <tree>
-                <field name="name"/>
-                <field name="tag_type"/>
-                <field name="active"/>
-                <field name="end_date"/>
+            <tree string="Llista de Tags">
+                <field name="name" string="Nom"/>
+                <field name="tag_type" string="Tipus"/>
+                <field name="active" string="Actiu"/>
+                <field name="end_date" string="Data de Finalització"/>
             </tree>
         </field>
     </record>
 
-    <!-- Vista de formulari -->
+    <!-- Vista de Formulari (Form) -->
     <record id="view_tags_form" model="ir.ui.view">
         <field name="name">tags.management.form</field>
         <field name="model">tags.management</field>
         <field name="arch" type="xml">
-            <form>
+            <form string="Gestió de Tags">
                 <sheet>
-                    <group>
-                        <field name="name"/>
-                        <field name="tag_type"/>
-                        <field name="color"/>
-                        <field name="active"/>
-                        <field name="end_date"/>
+                    <group col="2" style="display: flex; align-items: center;">
+                        <!-- Icona petita com a representació visual -->
+                        <div style="width: 50px; height: 50px; border-radius: 8px; overflow: hidden; margin-right: 15px;">
+                            <field name="icon" widget="image" options="{'preview_image': 'icon'}" style="width: 100%; height: 100%; object-fit: cover;"/>
+                        </div>
+                        <!-- Nom i Tipus del Tag -->
+                        <div style="flex: 1;">
+                            <h1 style="margin: 0; font-size: 22px; font-weight: bold;">
+                                <field name="name" placeholder="Nom del Tag"/>
+                            </h1>
+                            <div style="font-size: 14px; color: #7F8C8D;">
+                                <field name="tag_type" string="Tipus de Tag"/>
+                            </div>
+                        </div>
                     </group>
+
                     <group>
-                        <field name="description"/>
-                        <field name="icon" widget="image"/>
+                        <group>
+                            <field name="color" string="Color"/>
+                            <field name="active"/>
+                            <field name="end_date" string="Data de Finalització"/>
+                        </group>
+                        <group>
+                            <field name="description" string="Descripció"/>
+                            <field name="notes" string="Notes"/>
+                        </group>
                     </group>
-                    <notebook>
-                        <page string="Animals">
-                            <field name="animal_ids" widget="many2many_tags"/>
-                        </page>
-                        <page string="Zoos">
-                            <field name="zoo_ids" widget="many2many_tags"/>
-                        </page>
-                        <page string="Espècies">
-                            <field name="species_ids" widget="many2many_tags"/>
-                        </page>
-                    </notebook>
                 </sheet>
             </form>
         </field>
     </record>
 
-    <!-- Acció -->
+
+    <!-- Vista Graph (Correcció d'Errors) -->
+    <record id="view_tags_graph" model="ir.ui.view">
+        <field name="name">tags.management.graph</field>
+        <field name="model">tags.management</field>
+        <field name="arch" type="xml">
+            <graph type="bar" string="Gràfic de Distribució de Tags">
+                <!-- Comptem el nombre de tags segons el tipus -->
+                <field name="tag_type" type="row"/>
+                <field name="id" type="measure" string="Nombre de Tags" sum="1"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="view_tags_kanban" model="ir.ui.view">
+        <field name="name">tags.management.kanban</field>
+        <field name="model">tags.management</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_small_column">
+                <field name="icon"/>
+                <field name="name"/>
+                <field name="tag_type"/>
+                <field name="active"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="o_kanban_record oe_kanban_global_click" style="display: flex; align-items: center; padding: 10px; border: 1px solid #e3e3e3; border-radius: 5px;">
+                            <!-- Secció de la imatge (icon) -->
+                            <div class="o_kanban_image" style="width: auto; height: 80px; flex-shrink: 0; object-fit: cover; border-radius: 5px; overflow: hidden; margin-right: 10px;">
+                                <t t-if="record.icon.raw_value">
+                                    <img t-att-src="'/web/image/tags.management/' + record.id.raw_value + '/icon'" style="width: 100%; height: 100%; object-fit: cover;" alt="Icon del Tag"/>
+                                </t>
+                                <t t-else="">
+                                    <img t-att-src="'/zoo_management/static/src/img/icono_placeholder.png'" style="width: 100%; height: 100%; object-fit: cover;" alt="Placeholder"/>
+                                </t>
+                            </div>
+
+                            <!-- Detalls del tag -->
+                            <div class="oe_kanban_details" style="flex-grow: 1; overflow: hidden;">
+                                <div style="font-size: 16px; font-weight: bold; margin-bottom: 5px;">
+                                    <field name="name"/>
+                                </div>
+                                <div style="font-size: 14px; color: #555;">
+                                    <field name="tag_type"/>
+                                </div>
+                                <div style="margin-top: 5px;">
+                                    <t t-if="record.active.raw_value">
+                                        <span class="badge badge-success" style="background-color: #5cb85c; color: #fff; padding: 3px 7px; border-radius: 3px;">Actiu</span>
+                                    </t>
+                                    <t t-else="">
+                                        <span class="badge badge-danger" style="background-color: #d9534f; color: #fff; padding: 3px 7px; border-radius: 3px;">Inactiu</span>
+                                    </t>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+    
+    <!-- Vista de Cerca (Search) -->
+    <record id="view_tags_search" model="ir.ui.view">
+        <field name="name">tags.management.search</field>
+        <field name="model">tags.management</field>
+        <field name="arch" type="xml">
+            <search string="Cerca Tags">
+                <field name="name" string="Nom"/>
+                <field name="tag_type" string="Tipus"/>
+                <filter name="active_true" string="Actius" domain="[('active', '=', True)]"/>
+                <filter name="inactive" string="Inactius" domain="[('active', '=', False)]"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Acció per a Tags -->
     <record id="action_tags" model="ir.actions.act_window">
         <field name="name">Tags</field>
         <field name="res_model">tags.management</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">tree,kanban,form,graph,pivot</field>
+        <field name="search_view_id" ref="view_tags_search"/>
     </record>
 </odoo>

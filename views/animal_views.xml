@@ -1,53 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- llista -->
+    <!-- Vista de Llista (Tree) -->
     <record id="view_animal_tree" model="ir.ui.view">
         <field name="name">animal.management.tree</field>
         <field name="model">animal.management</field>
         <field name="arch" type="xml">
             <tree>
-                <field name="id_code"/>
-                <field name="species_id"/>
-                <field name="zoo_id"/>
-                <field name="gender"/>
-                <field name="weight"/>
-                <field name="height"/>
-                <field name="length"/>
-                <field name="behaviour"/>
-                <field name="origin_country"/>
-                <field name="origin_continent"/>
+                <field name="id_code" string="Codi Identificatiu"/>
+                <field name="species_id" string="Espècie"/>
+                <field name="zoo_id" string="Zoològic"/>
+                <field name="gender" string="Gènere"/>
+                <field name="age" string="Edat"/>
+                <field name="weight" string="Pes (kg)"/>
+                <field name="height" string="Alçada (cm)"/>
+                <field name="length" string="Longitud (m)"/>
+                <field name="behaviour" string="Comportament"/>
+                <field name="origin_country" string="País d'Origen"/>
+                <field name="origin_continent" string="Continent d'Origen"/>
             </tree>
         </field>
     </record>
 
-    <!-- Formulari -->
+    <!-- Vista de Formulari -->
     <record id="view_animal_form" model="ir.ui.view">
         <field name="name">animal.management.form</field>
         <field name="model">animal.management</field>
         <field name="arch" type="xml">
-            <form>
+            <form string="Gestió d'Animals">
                 <sheet>
+                    <!-- Capçalera amb imatge i nom -->
+                    <div class="oe_title" style="display: flex; align-items: center; flex-wrap: wrap; margin-bottom: 20px;">
+                        <div style="flex: 0 0 auto; margin-right: 10px;">
+                            <field name="image" widget="image" class="oe_avatar" options="{'preview_image': 'image'}" style="max-width: 150px; width: 100%; height: auto; 
+                                          border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);" />
+                        </div>
+                        <div style="flex: 1;">
+                            <h1 style="margin: 0; font-size: 28px; font-weight: bold; color: #4CAF50;">
+                                <field name="name" placeholder="Identificador de l'animal"/>
+                            </h1>
+                        </div>
+                    </div>
+
+                    <!-- Informació General -->
                     <group>
-                        <field name="id_code"/>
-                        <field name="birth_date"/>
-                        <field name="gender"/>
-                        <field name="weight"/>
-                        <field name="height"/>
-                        <field name="length"/>
-                        <field name="behaviour"/>
-                        <field name="species_id"/>
-                        <field name="zoo_id"/>
+                        <group>
+                            <field name="id_code" string="Codi Identificatiu"/>
+                            <field name="birth_date" string="Data de Naixement"/>
+                            <field name="gender" string="Gènere"/>
+                            <field name="age" string="Edat" readonly="1"/>
+                            <field name="weight" string="Pes (kg)"/>
+                            <field name="height" string="Alçada (cm)"/>
+                            <field name="length" string="Longitud (m)"/>
+                        </group>
+                        <group>
+                            <field name="behaviour" string="Comportament"/>
+                            <field name="species_id" string="Espècie"/>
+                            <field name="zoo_id" string="Zoològic"/>
+                        </group>
                     </group>
-                    <group>
-                        <field name="origin_country"/>
-                        <field name="origin_continent"/>
+
+                    <!-- Origen -->
+                    <group string="Origen">
+                        <field name="origin_country" string="País d'Origen"/>
+                        <field name="origin_continent" string="Continent d'Origen"/>
+                        <field name="acquisition_type" string="Tipus d'Adquisició"/>
+                        <field name="acquisition_date" string="Data d'Adquisició"/>
                     </group>
-                    <group>
-                        <field name="notes"/>
-                        <field name="image" widget="image"/>
-                    </group>
+
+                    <!-- Notes i Etiquetes -->
                     <notebook>
-                        <page string="Tags">
-                            <field name="tags_ids" widget="many2many_tags"/>
+                        <page string="Notes i Documents">
+                            <field name="notes" placeholder="Afegir notes sobre l'animal..."/>
+                        </page>
+                        <page string="Etiquetes">
+                            <field name="tags_ids" widget="many2many_tags" string="Etiquetes"/>
                         </page>
                     </notebook>
                 </sheet>
@@ -55,10 +81,114 @@
         </field>
     </record>
 
-    <!-- Acció -->
+    <!-- Vista Kanban -->
+    <record id="view_animal_kanban" model="ir.ui.view">
+        <field name="name">animal.management.kanban</field>
+        <field name="model">animal.management</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_small_column">
+                <!-- Incluim el camp d'imatge per a que estigui disponible -->
+                <field name="image"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div t-attf-class="o_kanban_record oe_kanban_global_click" style="cursor: pointer; display: flex; flex-direction: row; align-items: center; 
+                                    background: #fff; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.15); 
+                                    transition: transform 0.2s; overflow: hidden;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+
+                            <!-- Secció d'Imatge -->
+                            <div class="o_kanban_image" style="width: 150px; height: 150px; flex-shrink: 0; overflow: hidden;">
+                                <t t-if="record.image.raw_value">
+                                    <img t-att-src="'/web/image/animal.management/' + record.id.raw_value + '/image'" alt="Imatge de l'animal" style="width: 100%; height: 100%; object-fit: cover;" loading="lazy"/>
+                                </t>
+                                <t t-else="">
+                                    <img t-att-src="'/zoo_management/static/src/img/placeholder.png'" alt="Imatge per defecte" style="width: 100%; height: 100%; object-fit: cover;" loading="lazy"/>
+                                </t>
+                            </div>
+
+                            <!-- Secció de Dades -->
+                            <div class="oe_kanban_details" style="flex-grow: 1; display: flex; flex-direction: column; justify-content: center; 
+                                        padding: 0 5px; overflow: hidden;">
+                                <!-- Nom -->
+                                <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                    <span style="font-size: 18px; font-weight: bold; color: #2C3E50;">
+                                        <field name="name"/>
+                                    </span>
+                                </div>
+                                <!-- Espècie -->
+                                <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px;">
+                                    <span style="font-size: 14px; color: #7F8C8D;">
+                                        <field name="species_id"/>
+                                    </span>
+                                </div>
+                                <!-- Edat -->
+                                <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px;">
+                                    <span style="font-size: 14px; color: #34495E;">Edat:</span>
+                                    <span style="font-size: 16px; color: #E74C3C; margin-left: 5px;">
+                                        <field name="age"/>
+                                    </span>
+                                </div>
+                                <!-- Pes -->
+                                <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px;">
+                                    <span style="font-size: 14px; color: #34495E;">Pes:</span>
+                                    <span style="font-size: 16px; color: #E74C3C; margin-left: 5px;">
+                                        <field name="weight"/>
+                                    </span>
+                                    <span style="font-size: 14px; color: #34495E;"> kg</span>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Vista de Cerca -->
+    <record id="view_animal_search" model="ir.ui.view">
+        <field name="name">animal.management.search</field>
+        <field name="model">animal.management</field>
+        <field name="arch" type="xml">
+            <search string="Cerca Animals">
+                <filter name="young_animals" string="Animals Joves" domain="[('age', '&lt;', 5)]"/>
+                <filter name="dangerous_animals" string="Perillós" domain="[('behaviour', '=', 'dangerous')]"/>
+                <filter name="born_in_zoo" string="Nascut al Zoològic" domain="[('acquisition_type', '=', 'zoo_born')]"/>
+                <field name="species_id" string="Espècie"/>
+                <field name="zoo_id" string="Zoològic"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Vista Graph -->
+    <record id="view_animal_graph" model="ir.ui.view">
+        <field name="name">animal.management.graph</field>
+        <field name="model">animal.management</field>
+        <field name="arch" type="xml">
+            <graph type="bar" string="Animals Graph">
+                <field name="age" type="measure"/>
+                <field name="weight" type="measure"/>
+                <field name="species_id" type="row"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Vista Pivot -->
+    <record id="view_animal_pivot" model="ir.ui.view">
+        <field name="name">animal.management.pivot</field>
+        <field name="model">animal.management</field>
+        <field name="arch" type="xml">
+            <pivot string="Animals Pivot">
+                <field name="age" type="measure"/>
+                <field name="weight" type="measure"/>
+                <field name="species_id" type="row"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- Acció per accedir a Animals -->
     <record id="action_animal" model="ir.actions.act_window">
         <field name="name">Animals</field>
         <field name="res_model">animal.management</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">kanban,tree,form,graph,pivot</field>
+        <field name="search_view_id" ref="view_animal_search"/>
     </record>
 </odoo>

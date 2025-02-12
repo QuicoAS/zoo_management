@@ -1,42 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Vista de llista -->
+    <!-- Vista de Llista (Tree) -->
     <record id="view_shop_tree" model="ir.ui.view">
         <field name="name">zoo.shop.tree</field>
         <field name="model">zoo.shop</field>
         <field name="arch" type="xml">
-            <tree>
-                <field name="name"/>
-                <field name="zoo_id"/>
-                <field name="shop_type"/>
-                <field name="size"/>
-                <field name="active"/>
+            <tree string="Llista de Botigues">
+                <field name="name" string="Nom"/>
+                <field name="zoo_id" string="Zoològic"/>
+                <field name="shop_type" string="Tipus"/>
+                <field name="size" string="Mida (m²)"/>
+                <field name="active" string="Actiu"/>
             </tree>
         </field>
     </record>
 
-    <!-- Vista de formulari -->
+    <!-- Vista de Formulari (Form) -->
     <record id="view_shop_form" model="ir.ui.view">
         <field name="name">zoo.shop.form</field>
         <field name="model">zoo.shop</field>
         <field name="arch" type="xml">
-            <form>
+            <form string="Gestió de Botigues">
                 <sheet>
+                    <!-- Capçalera amb imatge i nom -->
+                    <div class="oe_title" style="display: flex; align-items: center; flex-wrap: wrap; margin-bottom: 20px;">
+                        <div style="flex: 0 0 auto; margin-right: 10px;">
+                            <field name="image" widget="image" options="{'preview_image': 'image'}" style="width: 200px; height: auto; max-height:300px; object-fit: cover; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);" />
+                        </div>
+
+                        <div style="flex: 1;">
+                            <h1 style="margin: 0; font-size: 28px; font-weight: bold; color: #4CAF50;">
+                                <field name="name" placeholder="Nom de la botiga"/>
+                            </h1>
+                        </div>
+                    </div>
+
+                    <!-- Informació Bàsica -->
                     <group>
-                        <field name="name"/>
-                        <field name="zoo_id"/>
-                        <field name="shop_type"/>
-                        <field name="size"/>
+                        <group>
+                            <!-- El camp 'name' es mostra com a readonly per evitar modificacions accidentals -->
+                            <field name="name" string="Nom" readonly="1"/>
+                            <field name="zoo_id" string="Zoològic"/>
+                        </group>
+                        <group>
+                            <field name="shop_type" string="Tipus de Botiga"/>
+                            <field name="size" string="Mida (m²)"/>
+                        </group>
                     </group>
+
+                    <!-- Informació Addicional -->
                     <group>
-                        <field name="notes"/>
-                        <field name="image" widget="image"/>
+                        <field name="notes" string="Notes"/>
+                        <!-- En aquesta secció la imatge ja s'ha mostrat a la capçalera, per això es pot ocultar -->
+                        <field name="image" widget="image" invisible="1"/>
                     </group>
+
+                    <!-- Camps de Control -->
                     <group>
-                        <field name="active"/>
-                        <field name="total_capacity"/>
+                        <field name="active" string="Actiu"/>
+                        <field name="total_capacity" string="Capacitat Màxima"/>
                     </group>
+
+                    <!-- Etiquetes -->
                     <notebook>
-                        <page string="Tags">
+                        <page string="Etiquetes">
                             <field name="tags_ids" widget="many2many_tags"/>
                         </page>
                     </notebook>
@@ -45,10 +72,132 @@
         </field>
     </record>
 
+    <record id="view_shop_kanban_alt" model="ir.ui.view">
+        <field name="name">zoo.shop.kanban.alt</field>
+        <field name="model">zoo.shop</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_small_column">
+                <!-- Assegurem que el camp d'imatge estigui disponible -->
+                <field name="image"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <!-- Definim el color de fons per defecte i per condicions -->
+                        <t t-set="bg_color" t-value="'#fff'"/>
+                        <!-- Si la botiga no està activa, fem un fons més gris -->
+                        <t t-if="!record.active.raw_value">
+                            <t t-set="bg_color" t-value="'#f5f5f5'"/>
+                        </t>
+                        <!-- Condicions segons el tipus de botiga (exemple: 'souvenir', 'food', 'educational', 'artisan') -->
+                        <t t-if="record.shop_type.raw_value == 'souvenir'">
+                            <t t-set="bg_color" t-value="'#f0f9ff'"/>
+                        </t>
+                        <t t-if="record.shop_type.raw_value == 'food'">
+                            <t t-set="bg_color" t-value="'#fff7e6'"/>
+                        </t>
+                        <t t-if="record.shop_type.raw_value == 'educational'">
+                            <t t-set="bg_color" t-value="'#f6f6ff'"/>
+                        </t>
+                        <t t-if="record.shop_type.raw_value == 'artisan'">
+                            <t t-set="bg_color" t-value="'#fef6f6'"/>
+                        </t>
+
+                        <!-- Targeta Kanban amb estil aplicat dinàmicament -->
+                        <div t-att-style="'display: flex; align-items: center; padding: 10px; background: ' + bg_color + '; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); transition: transform 0.2s;'" t-attf-class="o_kanban_record oe_kanban_global_click" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                            <!-- Secció d'Imatge a l'esquerra -->
+                            <div style="width: 120px; height: 120px; overflow: hidden; border-radius: 8px; margin-right: 10px;">
+                                <t t-if="record.image.raw_value">
+                                    <img t-att-src="'/web/image/zoo.shop/' + record.id.raw_value + '/image'" alt="Imatge de la botiga" style="width: 100%; height: 100%; object-fit: cover;"/>
+                                </t>
+                                <t t-else="">
+                                    <img t-att-src="'/zoo_management/static/src/img/placeholder.png'" alt="Imatge per defecte" style="width: 100%; height: 100%; object-fit: cover;"/>
+                                </t>
+                            </div>
+                            <!-- Secció de Dades a la dreta -->
+                            <div style="flex: 1;">
+                                <div style="font-size: 16px; font-weight: bold; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                    <field name="name"/>
+                                </div>
+                                <div style="margin-top: 4px; font-size: 14px; color: #777;">
+                                    <field name="shop_type"/>
+                                </div>
+                                <div style="margin-top: 4px; font-size: 14px; color: #777;">
+                                    <span>Mida: </span>
+                                    <span>
+                                        <field name="size"/>
+                                    </span>
+                                    <span> m²</span>
+                                </div>
+                                <div style="margin-top: 4px; font-size: 14px; color: #777;">
+                                    <span>Actiu: </span>
+                                    <span>
+                                        <field name="active"/>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Vista Graph -->
+    <record id="view_shop_graph" model="ir.ui.view">
+        <field name="name">zoo.shop.graph</field>
+        <field name="model">zoo.shop</field>
+        <field name="arch" type="xml">
+            <graph type="bar" string="Gràfic de Botigues">
+                <field name="size" type="measure"/>
+                <field name="shop_type" type="row"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Vista Pivot -->
+    <record id="view_shop_pivot" model="ir.ui.view">
+        <field name="name">zoo.shop.pivot</field>
+        <field name="model">zoo.shop</field>
+        <field name="arch" type="xml">
+            <pivot string="Pivot de Botigues">
+                <field name="size" type="measure"/>
+                <field name="shop_type" type="row"/>
+                <field name="active" type="col"/>
+            </pivot>
+        </field>
+    </record>
+    <!-- Vista de Cerca (Search) per a Botigues -->
+    <record id="view_shop_search" model="ir.ui.view">
+        <field name="name">zoo.shop.search</field>
+        <field name="model">zoo.shop</field>
+        <field name="arch" type="xml">
+            <search string="Cerca Botigues">
+                <!-- Filtre per Estat Actiu/Inactiu -->
+                <filter name="active_true" string="Actives" domain="[('active', '=', True)]"/>
+                <filter name="inactive" string="Inactives" domain="[('active', '=', False)]"/>
+
+                <!-- Filtre per Tipus de Botiga -->
+                <group string="Filtrar per Tipus de Botiga">
+                    <filter name="souvenir" string="Botiga de Records" domain="[('shop_type', '=', 'souvenir')]"/>
+                    <filter name="food" string="Botiga de Menjar" domain="[('shop_type', '=', 'food')]"/>
+                    <filter name="educational" string="Material Educatiu" domain="[('shop_type', '=', 'educational')]"/>
+                    <filter name="artisan" string="Productes Artesans" domain="[('shop_type', '=', 'artisan')]"/>
+                </group>
+
+                <!-- Filtre per Mida -->
+                <filter name="large_shops" string="Més de 100 m²" domain="[('size', '&gt;', 100)]"/>
+                <filter name="small_shops" string="Menys de 50 m²" domain="[('size', '&lt;', 50)]"/>
+
+
+                <!-- Camps de cerca directa -->
+                <field name="name" string="Nom de la Botiga"/>
+                <field name="zoo_id" string="Zoològic"/>
+            </search>
+        </field>
+    </record>
     <!-- Acció -->
     <record id="action_shop" model="ir.actions.act_window">
         <field name="name">Botigues</field>
         <field name="res_model">zoo.shop</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">tree,kanban,form,graph,pivot</field>
     </record>
 </odoo>

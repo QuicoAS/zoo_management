@@ -1,12 +1,14 @@
-from odoo import models, fields
+from odoo import models, fields, api
 
 class Species(models.Model):
     _name = 'species.management'
     _description = 'Gestió d´Espècies'
+    _order = 'common_name asc'
 
     # Camps generals
     scientific_name = fields.Char(string="Nom Científic", required=True)
     common_name = fields.Char(string="Nom Vulgar", required=True)
+    name = fields.Char(string="Nom Complet", compute='_compute_name', store=True)
 
     # Estat de conservació
     iucn_endangered_status = fields.Selection(
@@ -47,7 +49,6 @@ class Species(models.Model):
         ('crepuscular', 'Crepuscular')
     ], string="Activitat", required=True, default='diurnal', help="Tipus d'activitat principal")
     
-    
     # Relacions amb altres models
     animals_ids = fields.One2many(
         'animal.management', 'species_id', string="Animals"
@@ -56,4 +57,9 @@ class Species(models.Model):
     tags_ids = fields.Many2many(
         'tags.management', string="Tags"
     )
-    
+
+    # Mètode per calcular el camp name
+    @api.depends('common_name', 'scientific_name')
+    def _compute_name(self):
+        for record in self:
+            record.name = f"{record.common_name} ({record.scientific_name})" if record.scientific_name else record.common_name

@@ -21,7 +21,7 @@ Permet als usuaris gestionar:
 
     # Mòduls necessaris per al funcionament
     'depends': ['base'],
-
+    
     # Fitxers carregats sempre
     'data': [
         'security/ir.model.access.csv',      # Accessos a models
